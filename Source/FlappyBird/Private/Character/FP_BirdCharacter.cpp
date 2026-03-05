@@ -5,6 +5,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFP_BirdCharacter, Log, All);
@@ -25,6 +26,7 @@ void AFP_BirdCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	InitializeMappingContext();
+	SubscribeToOnPointReached();
 }
 
 void AFP_BirdCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -52,6 +54,25 @@ void AFP_BirdCharacter::InitializeMappingContext() const
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+	}
+}
+
+void AFP_BirdCharacter::SubscribeToOnPointReached()
+{
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AFP_BirdCharacter::HandlePointReached);
+}
+
+
+void AFP_BirdCharacter::HandlePointReached(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                           UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                                           const FHitResult& SweepResult)
+{
+	if (!OtherComp) return;
+
+	if (OtherComp->ComponentHasTag("Point"))
+	{
+		UE_LOG(LogFP_BirdCharacter, Log, TEXT("Point reached!"));
+		OnPointReached.Broadcast();
 	}
 }
 

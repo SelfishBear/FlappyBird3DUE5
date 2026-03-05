@@ -23,7 +23,7 @@ void AFP_Tube::Tick(float DeltaTime)
 void AFP_Tube::Move(float DeltaTime)
 {
 	FVector NewLocation = GetActorLocation();
-	NewLocation.X -= MovementSpeed * DeltaTime;
+	NewLocation.X += MovementSpeed * DeltaTime;
 	SetActorLocation(NewLocation, true);
 }
 
